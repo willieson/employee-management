@@ -27,4 +27,14 @@ class Leaves extends Model
     {
         return $this->belongsTo(Leave_types::class, 'leave_types_id', 'id');
     }
+    // Format Tanggal
+    public function getStartDateAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function getEndDateAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('d-m-Y');
+    }
 }
