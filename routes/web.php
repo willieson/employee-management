@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['role:HRD'])->group(function () {
     Route::get('/employee', [UserController::class, 'index'])->name('employee');
     Route::post('/employee_create', [UserController::class, 'store'])->name('employee.store');
+    Route::put('/employee_update/{id}', [UserController::class, 'update'])->name('employee.update')->middleware('auth');
 });
 
 require __DIR__ . '/auth.php';

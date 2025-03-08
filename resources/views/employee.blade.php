@@ -64,7 +64,13 @@
                                         <td class="py-2 px-4">{{ $item->role }}</td>
                                         <td class="py-2 px-4">
                                             {{ $item->superior ? $item->superior->name : 'Tidak ada superior' }}</td>
-                                        <td class="py-2 px-4">Edit</td>
+                                        <td class="py-2 px-4"><button
+                                                class="editUser bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600"
+                                                data-id="{{ $item->id }}" data-name="{{ $item->name }}"
+                                                data-address="{{ $item->address }}"
+                                                data-contact="{{ $item->contact }}" data-email="{{ $item->email }}"
+                                                data-role="{{ $item->role }}"
+                                                data-superior="{{ $item->id_superior }}">Edit</button></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -91,28 +97,30 @@
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 class="text-xl font-bold mb-4">Create New User</h2>
-            <form action="{{ route('employee.store') }}" method="POST">
+            <h2 id="modalTitle" class="text-xl font-bold mb-4">Create New User</h2>
+            <form id="userForm" method="POST">
                 @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" name="id" id="userId">
                 <div class="mb-4">
                     <label class="block text-gray-700">Name</label>
-                    <input type="text" name="name" class="w-full p-2 border rounded-lg" required>
+                    <input type="text" name="name" id="name" class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Address</label>
-                    <input type="text" name="address" class="w-full p-2 border rounded-lg" required>
+                    <input type="text" name="address" id="address" class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Contact</label>
-                    <input type="text" name="contact" class="w-full p-2 border rounded-lg" required>
+                    <input type="text" name="contact" id="contact" class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Email</label>
-                    <input type="email" name="email" class="w-full p-2 border rounded-lg" required>
+                    <input type="email" name="email" id="email" class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Role</label>
-                    <select name="role" class="w-full p-2 border rounded-lg" required>
+                    <select name="role" id="role" class="w-full p-2 border rounded-lg" required>
                         <option value="Staff">Staff</option>
                         <option value="HRD">HRD</option>
                         <option value="Manager">Manager</option>
@@ -120,7 +128,8 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Superior</label>
-                    <select id="superiorSelect" name="id_superior" class="w-full p-2 border rounded-lg">
+                    <select name="id_superior" id="superiorSelect" class="w-full p-2 border rounded-lg">
+                        <option value="">Tidak ada superior</option>
                         @foreach ($all_users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach
@@ -128,19 +137,18 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Password</label>
-                    <input type="password" name="password" class="w-full p-2 border rounded-lg" required>
+                    <input type="password" name="password" id="password" class="w-full p-2 border rounded-lg">
+                    <small class="text-gray-500">Kosongkan jika tidak ingin mengubah password</small>
                 </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeModal"
                         class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg mr-2 hover:bg-gray-400">Cancel</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Create</button>
+                    <button type="submit" id="saveButton"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Save</button>
                 </div>
             </form>
         </div>
     </div>
-    </div>
-
 
 
 </x-app-layout>
@@ -149,28 +157,68 @@
     const openModalBtn = document.getElementById('openModal');
     const closeModalBtn = document.getElementById('closeModal');
     const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const userForm = document.getElementById('userForm');
+    const formMethod = document.getElementById('formMethod');
 
+    // Inisialisasi Select2
+    $(document).ready(function() {
+        $('#superiorSelect').select2({
+            placeholder: "Choose",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Debug form submission
+        $('#userForm').on('submit', function(e) {
+            console.log('Form submitted to:', this.action);
+            console.log('Method:', formMethod.value);
+        });
+    });
+
+    // Buka modal untuk create
     openModalBtn.addEventListener('click', () => {
+        modalTitle.textContent = 'Create New User';
+        userForm.action = "{{ route('employee.store') }}";
+        formMethod.value = 'POST';
+        document.getElementById('userId').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('contact').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('role').value = '';
+        $('#superiorSelect').val('').trigger('change');
+        document.getElementById('password').value = '';
         modal.classList.remove('hidden');
     });
 
+    // Tutup modal
     closeModalBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
     });
 
-    // Tutup modal jika klik di luar form
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.add('hidden');
         }
     });
 
-    // Inisialisasi Select2 untuk Superior
-    $(document).ready(function() {
-        $('#superiorSelect').select2({
-            placeholder: "Choose",
-            allowClear: true,
-            width: '100%'
+    // Buka modal untuk edit
+    document.querySelectorAll('.editUser').forEach(button => {
+        button.addEventListener('click', () => {
+            modalTitle.textContent = 'Edit User';
+            userForm.action = "{{ route('employee.update', '') }}/" + button.dataset.id;
+            formMethod.value = 'PUT';
+            document.getElementById('userId').value = button.dataset.id;
+            document.getElementById('name').value = button.dataset.name;
+            document.getElementById('address').value = button.dataset.address;
+            document.getElementById('contact').value = button.dataset.contact;
+            document.getElementById('email').value = button.dataset.email;
+            document.getElementById('role').value = button.dataset.role || '';
+            console.log('Role saat ini:', button.dataset.role); // Debugging
+            $('#superiorSelect').val(button.dataset.superior || '').trigger('change');
+            document.getElementById('password').value = '';
+            modal.classList.remove('hidden');
         });
     });
 </script>
