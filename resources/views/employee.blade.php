@@ -2,10 +2,42 @@
     <section class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+
+                @if (session('success'))
+                    <div class="bg-green-500 text-white p-4 rounded-lg mb-6 shadow-md">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+                <!-- Pesan Error -->
+                @if (session('error'))
+                    <div class="bg-red-500 text-white p-4 rounded-lg mb-6 shadow-md">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                    </div>
+                @endif
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                         {{ __('User List') }}
                     </h2>
+                    <!-- Tombol Create User -->
+                    <div class="m-4">
+                        <button id="openModal" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            Create
+                        </button>
+                    </div>
                     <hr>
 
                     <!-- Table -->
@@ -23,7 +55,7 @@
                                 </tr>
                             </thead>
                             <tbody id="dataTable">
-                                @foreach ($user_list as $item)
+                                @forelse ($user_list as $item)
                                     <tr class="border-b hover:bg-gray-100">
                                         <td class="py-2 px-4">{{ $item->name }}</td>
                                         <td class="py-2 px-4">{{ $item->address }}</td>
@@ -34,7 +66,11 @@
                                             {{ $item->superior ? $item->superior->name : 'Tidak ada superior' }}</td>
                                         <td class="py-2 px-4">Edit</td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="py-2 px-4">Tidak ada data</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
 
 
@@ -52,6 +88,89 @@
 
     </section>
 
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Create New User</h2>
+            <form action="{{ route('employee.store') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-gray-700">Name</label>
+                    <input type="text" name="name" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Address</label>
+                    <input type="text" name="address" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Contact</label>
+                    <input type="text" name="contact" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Email</label>
+                    <input type="email" name="email" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Role</label>
+                    <select name="role" class="w-full p-2 border rounded-lg" required>
+                        <option value="Staff">Staff</option>
+                        <option value="HRD">HRD</option>
+                        <option value="Manager">Manager</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Superior</label>
+                    <select id="superiorSelect" name="id_superior" class="w-full p-2 border rounded-lg">
+                        @foreach ($all_users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Password</label>
+                    <input type="password" name="password" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="closeModal"
+                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg mr-2 hover:bg-gray-400">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
 
 
 </x-app-layout>
+<!-- JavaScript untuk Modal -->
+<script>
+    const openModalBtn = document.getElementById('openModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const modal = document.getElementById('modal');
+
+    openModalBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Tutup modal jika klik di luar form
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+
+    // Inisialisasi Select2 untuk Superior
+    $(document).ready(function() {
+        $('#superiorSelect').select2({
+            placeholder: "Choose",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
