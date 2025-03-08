@@ -36,6 +36,15 @@ class User extends Authenticatable
         'password',
     ];
 
+
+    //Set Role
+    public function isAdmin()
+    {
+        return $this->role === 'HRD';
+    }
+
+
+
     // Relasi One-to-One: Mendapatkan atasan (superior)
     public function superior()
     {
