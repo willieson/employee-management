@@ -131,11 +131,12 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Days</label>
-                    <input type="text" name="in_days" id="days" class="w-full p-2 border rounded-lg" readonly>
+                    <input required type="text" name="in_days" id="days" class="w-full p-2 border rounded-lg"
+                        readonly>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Notes</label>
-                    <textarea type="text" name="in_notes" id="in_notes" class="w-full p-2 border rounded-lg"></textarea>
+                    <textarea required type="text" name="in_notes" id="in_notes" class="w-full p-2 border rounded-lg"></textarea>
                 </div>
                 <div class="flex justify-end">
                     <button type="button" id="closeModal"

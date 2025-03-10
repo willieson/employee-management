@@ -156,6 +156,7 @@ class HistoryController extends Controller
 
             $totalPendingDays = Leaves::where('users_id', $userId)
                 ->where('status', 'pending')
+                ->where('leave_types_id', '1')
                 ->whereYear('start_date', $currentYear)
                 ->sum('days');
 
