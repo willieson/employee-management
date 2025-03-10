@@ -3,7 +3,16 @@
 <li>Setting .env</li>
 <li>install composer</li>
 <li>install node modules</li>
+<li>Jalankan php artisan migrate</li>
+<li>Jalankan php artisan db:seed</li>
+<li>untuk dummy 10 user jalankan php artisan db:seed --class=UserSeeder</li>
 </ol>
+
+<h2>untuk login admin</h2>
+<ul>
+<li>Email : admin@mail.com</li>
+<li>password : admin</li>
+</ul>
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
