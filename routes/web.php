@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\LeavesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -9,7 +10,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [ProfileController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [LeavesController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::put('/leave/approve/{id}', [LeavesController::class, 'approve'])->middleware(['auth', 'verified'])->name('leave.approve');
+Route::put('/leave/reject/{id}', [LeavesController::class, 'reject'])->middleware(['auth', 'verified'])->name('leave.reject');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
