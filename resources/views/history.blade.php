@@ -91,7 +91,15 @@
                                         <td class="py-2 px-4">{{ $item->end_date }}</td>
                                         <td class="py-2 px-4">{{ $item->days }}</td>
                                         <td class="py-2 px-4">{{ $item->note }}</td>
-                                        <td class="py-2 px-4">{{ $item->status }}</td>
+                                        <td class="py-2 px-4">
+                                            @if ($item->status == 'approved')
+                                                <i title="Approved" class="fas fa-check text-green-500"></i>
+                                            @elseif ($item->status == 'rejected')
+                                                <i title="Rejected" class="fas fa-times text-red-500"></i>
+                                            @else
+                                                <i title="Pending" class="fas fa-question text-yellow-500"></i>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -131,8 +139,8 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Days</label>
-                    <input required type="text" name="in_days" id="days" class="w-full p-2 border rounded-lg"
-                        readonly>
+                    <input required type="text" name="in_days" id="days"
+                        class="w-full p-2 border rounded-lg" readonly>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Notes</label>
