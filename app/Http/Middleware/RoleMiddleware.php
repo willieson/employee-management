@@ -19,6 +19,6 @@ class RoleMiddleware
         if (Auth::check() && Auth::user()->role === $role) {
             return $next($request);
         }
-        return redirect('/dashboard')->with('error', 'Anda tidak memiliki akses.');
+        return redirect('/dashboard')->with('error', "You don't have access.");
     }
 }

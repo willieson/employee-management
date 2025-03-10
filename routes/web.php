@@ -14,6 +14,7 @@ Route::get('/dashboard', [ProfileController::class, 'dashboard'])->middleware(['
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::post('/leaves_request', [HistoryController::class, 'store'])->name('leaves.store');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
