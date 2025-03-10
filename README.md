@@ -1,3 +1,4 @@
+Laravel 12 minimum PHP Version 8.2
 <h1>Jangan lupa</h1>
 <ol>
 <li>Setting .env</li>
